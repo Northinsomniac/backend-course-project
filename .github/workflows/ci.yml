@@ -26,8 +26,8 @@ jobs:
           sleep 10
 
       - name: Run tests inside API container
-        run: docker exec -it ci_api pytest /app/tests/test_all.py --disable-warnings --maxfail=5
-      
+        run: docker exec ci_api pytest /app/tests/test_all.py --disable-warnings --maxfail=5
+
       - name: Stop and Clean Up Docker Containers
         if: always()
         run: docker compose -f docker-compose.ci.yml down
