@@ -14,7 +14,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
+      - name: Load environment variables from GitHub Secrets
+        run: echo "${{ secrets.ENV_VARS }}" > .env
+      
       - name: Set up Docker Compose
         run: docker compose -f docker-compose.override.yml up -d
 

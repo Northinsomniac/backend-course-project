@@ -1,12 +1,8 @@
-version: '3.8'
-
 services:
   db:
     image: postgres
     container_name: ci_db
     restart: always
-    env_file: 
-      - .env
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -23,14 +19,13 @@ services:
       timeout: 5s
       retries: 5
 
-
   rabbitmq:
     image: "rabbitmq:3-management"
     container_name: ci_rabbitmq
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -53,8 +48,16 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    env_file: 
-      - .env
+    environment:
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
     ports:
       - "8080:8080"
     networks:
@@ -66,5 +69,3 @@ networks:
 
 volumes:
   postgres_data:
-
-
