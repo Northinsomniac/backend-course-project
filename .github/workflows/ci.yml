@@ -21,13 +21,13 @@ jobs:
       - name: Set up Docker Compose
         run: docker compose -f docker-compose.override.yml up -d
 
-      - name: Wait for services to be healthy
+      - name: Wait for services to be healthy (wait untill all services start to be healthy)
         run: |
-          sleep 10
+          sleep 30
 
       - name: Run tests inside API container
         run: docker exec ci_api pytest /app/tests/test_all.py --disable-warnings --maxfail=5
 
       - name: Stop and Clean Up Docker Containers
         if: always()
-        run: docker compose -f docker-compose.ci.yml down
+        run: docker compose -f docker-compose.override.yml down

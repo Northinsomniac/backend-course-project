@@ -3,6 +3,8 @@ services:
     image: postgres
     container_name: ci_db
     restart: always
+    env_file: 
+      - .env
     environment:
       POSTGRES_USER: ${DATABASE_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
@@ -23,6 +25,8 @@ services:
     image: "rabbitmq:3-management"
     container_name: ci_rabbitmq
     restart: always
+    env_file: 
+      - .env
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -48,16 +52,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    environment:
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      RABBITMQ_HOST: ${RABBITMQ_HOST}
-      RABBITMQ_PORT: ${RABBITMQ_PORT}
+    env_file: 
+      - .env
     ports:
       - "8080:8080"
     networks:
