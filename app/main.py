@@ -1,16 +1,21 @@
 from fastapi import FastAPI
+from app.models import Base
+from app.database import engine
 
-from app import models
-from .database import engine
-
-from .routers import post, user, auth
-from .config import settings
+from app.routers import post, user, auth
 
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator
 
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+instrumentator = Instrumentator().instrument(app)
+
+@app.on_event("startup")
+async def _startup():
+    instrumentator.expose(app)
 
 origins = ["*"]
 
@@ -21,11 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-
-
-
 
 app.include_router(post.router)
 app.include_router(user.router)

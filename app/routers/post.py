@@ -1,10 +1,11 @@
-from app import models, schema
+from app import models, schema, oauth2
 from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal, get_db
 from typing import List, Optional
 
-from app import oauth2
+from app.rabbitmq_producer import send_post_notification  
+
 
 router = APIRouter(
     prefix="/posts",
@@ -19,16 +20,32 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.
     return posts
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schema.Post)
-def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+# @router.post('/', status_code=status.HTTP_201_CREATED, response_model=schema.Post)
+# def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     
      
-    new_post = models.Post(owner_id=current_user.id, **post.dict())
+#     new_post = models.Post(owner_id=current_user.id, **post.dict())
+    
+#     db.add(new_post)
+#     db.commit()
+#     db.refresh(new_post)
+
+
+#     return new_post
+
+
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schema.Post)
+def create_posts(post: schema.PostCreate, db: Session = Depends(get_db), 
+                 current_user: int = Depends(oauth2.get_current_user)):
+    new_post = models.Post(owner_id=current_user.id, **post.model_dump())
     
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
 
+    # Send message to RabbitMQ
+    message = f"New post created: {new_post.title}"
+    send_post_notification(message)
 
     return new_post
     
