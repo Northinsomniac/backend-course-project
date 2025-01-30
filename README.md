@@ -32,6 +32,9 @@ RABBITMQ_PORT=5672
 
 ## Метрики 
 
+![image](https://github.com/user-attachments/assets/1622aaa9-fab4-4623-abd5-34ba9ec73b22)
+
+
 Сбор метрик метрик осуществляется с помощью Prometheus, визуализирует Graphana
 
 (тут небольшой ускоренный видос) 
